@@ -1,0 +1,11 @@
+{
+  "name": "interopera",
+  "version": "1.0.0",
+  "description": "## Overview Build a full-stack application using **RAG (Retrieval Augmented Generation)** technology: 1. **Next.js** as the frontend framework 2. **FastAPI** as the backend API layer 3. **PDF financial statement document** based intelligent Q&A system 4. **Vector database** for document search and generative AI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

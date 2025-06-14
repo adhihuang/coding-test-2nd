@@ -1,7 +1,7 @@
 from typing import List, Dict, Any
 from langchain.schema import Document
 from services.vector_store import VectorStoreService
-from config import settings
+from services.llm_service import LLMClient
 import logging
 
 logger = logging.getLogger(__name__)
@@ -9,20 +9,30 @@ logger = logging.getLogger(__name__)
 
 class RAGPipeline:
     def __init__(self):
-        # TODO: Initialize RAG pipeline components
-        # - Vector store service
-        # - LLM client
-        # - Prompt templates
-        pass
+        self.vector_store = VectorStoreService()
+        self.llm = LLMClient()
     
     def generate_answer(self, question: str, chat_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
-        """Generate answer using RAG pipeline"""
-        # TODO: Implement RAG pipeline
-        # 1. Retrieve relevant documents
-        # 2. Generate context from retrieved documents
-        # 3. Generate answer using LLM
-        # 4. Return answer with sources
-        pass
+        logger.info(" ============== Generate Answer : Start ============== ")
+        
+        documents = self.vector_store.similarity_search(question , 2)
+        context = self._generate_context(documents)
+        response = self.llm.ask_with_context(question, context)
+        
+        sources = []
+        for doc , score in documents:
+            page = doc.metadata.get("page", 0)
+            content = doc.page_content.strip()
+
+            sources.append({
+                "content" : content,
+                "page" : page, 
+                "score" : score,
+                "metadata" : doc.metadata
+            })
+
+        logger.info(" ============== Generate Answer : Done ============== ")
+        return response, sources
     
     def _retrieve_documents(self, query: str) -> List[Document]:
         """Retrieve relevant documents for the query"""
@@ -33,14 +43,14 @@ class RAGPipeline:
         pass
     
     def _generate_context(self, documents: List[Document]) -> str:
-        """Generate context from retrieved documents"""
-        # TODO: Generate context string from documents
-        pass
+        context_chunks = []
+        for doc , _ in documents:
+            source = doc.metadata.get("source", "unknown")
+            page = doc.metadata.get("page", "unknown")
+            content = doc.page_content.strip()
+            
+            chunk = f"[Source: {source}, Page: {page}]\n{content}"
+            context_chunks.append(chunk)
+            
+        return "\n\n---\n\n".join(context_chunks)
     
-    def _generate_llm_response(self, question: str, context: str, chat_history: List[Dict[str, str]] = None) -> str:
-        """Generate response using LLM"""
-        # TODO: Implement LLM response generation
-        # - Create prompt with question and context
-        # - Call LLM API
-        # - Return generated response
-        pass 

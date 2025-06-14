@@ -2,10 +2,18 @@ import os
 from typing import List
 from pydantic_settings import BaseSettings
 
+import peewee as pw
+from peewee import Model, SqliteDatabase
+from pathlib import Path
 
+#set Up the database , we will using sqlite3
+DATA_DIR = str(Path(os.getenv("DATA_DIR", "./data")).resolve())
+os.makedirs(DATA_DIR, exist_ok=True)
+
+WEBUI_DB = SqliteDatabase(f"{DATA_DIR}/webdb.sqlite3")
 class Settings(BaseSettings):
     # OpenAI API configuration
-    openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
+    openai_api_key: str = os.getenv("OPENAI_API_KEY", "AIzaSyATbVPO_wd9FFPoOJs8q9uWEBo6G-irpcs")
     
     # Vector database configuration
     vector_db_path: str = os.getenv("VECTOR_DB_PATH", "./vector_store")
@@ -43,7 +51,7 @@ class Settings(BaseSettings):
     
     # Logging configuration
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
-    
+
     class Config:
         env_file = ".env"
 

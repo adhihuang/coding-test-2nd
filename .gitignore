@@ -9,6 +9,7 @@ backend/*.pyc
 frontend/.next/
 frontend/out/
 backend/vector_store/
+backend/data/
 
 # Environment variables
 .env
@@ -48,3 +49,5 @@ env/
 # Temporary files
 *.tmp
 *.temp 
+
+*.ipynb

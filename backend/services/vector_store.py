@@ -1,31 +1,31 @@
 from typing import List, Tuple
 from langchain.schema import Document
 from langchain.vectorstores import VectorStore
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import SentenceTransformerEmbeddings
+
 from config import settings
-import logging
+import logging , os 
 
 logger = logging.getLogger(__name__)
 
-
 class VectorStoreService:
     def __init__(self):
-        # TODO: Initialize vector store (ChromaDB, FAISS, etc.)
-        pass
+        self.path = settings.vector_db_path
+        self.embedding_model = SentenceTransformerEmbeddings(model_name="BAAI/bge-m3")
+
+        self.vectorstore = Chroma(
+            persist_directory=self.path,
+            embedding_function=self.embedding_model
+        )
     
-    def add_documents(self, documents: List[Document]) -> None:
+    def add_documents(self , documents: List[Document]) -> None:
         """Add documents to the vector store"""
-        # TODO: Implement document addition to vector store
-        # - Generate embeddings for documents
-        # - Store documents with embeddings in vector database
-        pass
+        self.vectorstore.add_documents(documents)
+        self.vectorstore.persist()
     
-    def similarity_search(self, query: str, k: int = None) -> List[Tuple[Document, float]]:
-        """Search for similar documents"""
-        # TODO: Implement similarity search
-        # - Generate embedding for query
-        # - Search for similar documents in vector store
-        # - Return documents with similarity scores
-        pass
+    def similarity_search(self, query: str, k: int) -> List[Tuple[Document, float]]:
+        return self.vectorstore.similarity_search_with_score(query, k=k)
     
     def delete_documents(self, document_ids: List[str]) -> None:
         """Delete documents from vector store"""
